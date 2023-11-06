@@ -2,7 +2,7 @@
 
 ## [프로젝트 개요]
 
-1. 온라인 전용 상품 시장 반응 분석
+온라인 전용 상품 시장 반응 분석
 
 ## [프로젝트 목표]
 
@@ -101,36 +101,4 @@ FROM
   AND   B.item_id = 'M0001'
   -- 해당 결과 테이블을 A 테이블이라고 정의(인라인 뷰)
   ) A 
-```
-
-## [궁금증]
-
-### 1. 테이블 생성
-
-- CONSTRAINT nn_reservation_customer_id NOT NULL enable -> NOT NULL
-
-### 2. ERD 화살표 의미, PK와 FK의 의존도 관계
-
-### 3. 분석10-1 에서 GROUD BY에 지점별 등급을 한번 더 매긴 이유?<br> (없어도 결과는 같음)
-```roomsql
-SELECT SUBSTR(A.reserv_date,1,6) 매출월,
-	 A.branch                  지점,
-	 SUM(B.sales)              전용상품매출,
-	 rank() OVER(PARTITION BY SUBSTR(A.reserv_date,1,6) 
-		ORDER BY SUM(B.sales) DESC) 지점순위,
-	 case A.branch when '강남' then 'A'
-                        when '종로' then 'A'	
-                        when '영등포' then 'A'
-                        else 'B' end 지점등급
-FROM  reservation A, order_info B
-WHERE A.reserv_no = B.reserv_no
-AND   A.cancel = 'N'
-AND   B.item_id = 'M0001'
-GROUP BY SUBSTR(A.reserv_date,1,6), 
-A.branch,
-      	 case A.branch when '강남' then 'A'
-                        when '종로' then 'A'	
-                        when '영등포' then 'A'
-                        else 'B' end 
-ORDER BY SUBSTR(A.reserv_date,1,6);
 ```
